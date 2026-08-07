@@ -27,6 +27,11 @@ def task(ctx, config):
         base = '/sys/kernel/config/nvmet'
         remote.run(
             args=[
+                'sudo', '/home/ubuntu/teardown-nvme-loop.sh',
+            ]
+        )
+        remote.run(
+            args=[
                 'grep', '^nvme_loop', '/proc/modules', run.Raw('||'),
                 'sudo', 'modprobe', 'nvme_loop',
                 run.Raw('&&'),
