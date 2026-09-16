@@ -4,6 +4,7 @@ Ceph cluster task, deployed via cephadm orchestrator
 import argparse
 import configobj
 import contextlib
+import ipaddress
 import json
 import logging
 import os
@@ -120,9 +121,20 @@ def normalize_hostnames(ctx):
     """
     Ensure we have short hostnames throughout, for consistency between
     remote.shortname and socket.gethostname() in cephadm.
+    Normalize DNS hostnames but preserve literal IP hostnames.
     """
     log.info('Normalizing hostnames...')
-    cluster = ctx.cluster.filter(lambda r: '.' in r.hostname)
+
+    def is_dns_hostname(remote):
+        if '.' not in remote.hostname:
+            return False
+        try:
+            ipaddress.ip_address(remote.hostname)
+        except ValueError:
+            return True
+        return False
+
+    cluster = ctx.cluster.filter(is_dns_hostname)
     cluster.run(args=[
         'sudo',
         'hostname',
