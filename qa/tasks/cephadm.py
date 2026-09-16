@@ -745,6 +745,7 @@ def ceph_bootstrap(ctx, config):
             '--image', ctx.ceph[cluster_name].image,
             '-v',
             'bootstrap',
+            '--allow-fqdn-hostname',
             '--fsid', fsid,
             '--config', '{}/seed.{}.conf'.format(testdir, cluster_name),
             '--output-config', '/etc/ceph/{}.conf'.format(cluster_name),
